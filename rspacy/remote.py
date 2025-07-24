@@ -2,7 +2,7 @@ import base64
 import requests
 from spacy.tokens import Doc
 from spacy.vocab import Vocab
-
+from rspacy.models import AnalyzeResponse
 
 class RemoteSpacy:
     def __init__(self, api_url: str):
@@ -12,51 +12,51 @@ class RemoteSpacy:
     def __call__(self, text: str) -> Doc:
         response = requests.post(self.api_url, json={"text": text})
         response.raise_for_status()
-        data = response.json()
+        data = AnalyzeResponse.model_validate(response.json())
 
-        vocab_bytes = base64.b64decode(data["vocab"])
-        doc_bytes = base64.b64decode(data["doc"])
-        tokens_data = data["lexeme_details_per_token"]
+        vocab_bytes = base64.b64decode(data.vocab)
+        doc_bytes = base64.b64decode(data.doc)
 
         vocab = Vocab().from_bytes(vocab_bytes)
         doc = Doc(vocab).from_bytes(doc_bytes)
+        lexeme_details_per_token = data.lexeme_details_per_token
 
         # Set attributes (use Token.set_extension if needed for custom ones)
-        for token, tok_data in zip(doc, tokens_data):
-            token.lex.rank = tok_data["rank"]
-            token.lex.flags = tok_data["flags"]
-            token.lex.norm = tok_data["norm"]
-            token.lex.norm_ = tok_data["norm_"]
-            token.lex.lower = tok_data["lower"]
-            token.lex.lower_ = tok_data["lower_"]
-            token.lex.shape = tok_data["shape"]
-            token.lex.shape_ = tok_data["shape_"]
-            token.lex.prefix = tok_data["prefix"]
-            token.lex.prefix_ = tok_data["prefix_"]
-            token.lex.suffix = tok_data["suffix"]
-            token.lex.suffix_ = tok_data["suffix_"]
-            token.lex.is_alpha = tok_data["is_alpha"]
-            token.lex.is_ascii = tok_data["is_ascii"]
-            token.lex.is_digit = tok_data["is_digit"]
-            token.lex.is_lower = tok_data["is_lower"]
-            token.lex.is_upper = tok_data["is_upper"]
-            token.lex.is_title = tok_data["is_title"]
-            token.lex.is_punct = tok_data["is_punct"]
-            token.lex.is_left_punct = tok_data["is_left_punct"]
-            token.lex.is_right_punct = tok_data["is_right_punct"]
-            token.lex.is_space = tok_data["is_space"]
-            token.lex.is_bracket = tok_data["is_bracket"]
-            token.lex.is_quote = tok_data["is_quote"]
-            token.lex.is_currency = tok_data["is_currency"]
-            token.lex.like_url = tok_data["like_url"]
-            token.lex.like_num = tok_data["like_num"]
-            token.lex.like_email = tok_data["like_email"]
-            # token.lex.is_oov = tok_data["is_oov"]
-            token.lex.is_stop = tok_data["is_stop"]
-            token.lex.lang = tok_data["lang"]
-            token.lex.lang_ = tok_data["lang_"]
-            token.lex.prob = tok_data["prob"]
-            token.lex.cluster = tok_data["cluster"]
-            token.lex.sentiment = tok_data["sentiment"]
+        for token, lex_details in zip(doc, lexeme_details_per_token):
+            token.lex.rank = lex_details.rank
+            token.lex.flags = lex_details.flags
+            token.lex.norm = lex_details.norm
+            token.lex.norm_ = lex_details.norm_
+            token.lex.lower = lex_details.lower
+            token.lex.lower_ = lex_details.lower_
+            token.lex.shape = lex_details.shape
+            token.lex.shape_ = lex_details.shape_
+            token.lex.prefix = lex_details.prefix
+            token.lex.prefix_ = lex_details.prefix_
+            token.lex.suffix = lex_details.suffix
+            token.lex.suffix_ = lex_details.suffix_
+            token.lex.is_alpha = lex_details.is_alpha
+            token.lex.is_ascii = lex_details.is_ascii
+            token.lex.is_digit = lex_details.is_digit
+            token.lex.is_lower = lex_details.is_lower
+            token.lex.is_upper = lex_details.is_upper
+            token.lex.is_title = lex_details.is_title
+            token.lex.is_punct = lex_details.is_punct
+            token.lex.is_left_punct = lex_details.is_left_punct
+            token.lex.is_right_punct = lex_details.is_right_punct
+            token.lex.is_space = lex_details.is_space
+            token.lex.is_bracket = lex_details.is_bracket
+            token.lex.is_quote = lex_details.is_quote
+            token.lex.is_currency = lex_details.is_currency
+            token.lex.like_url = lex_details.like_url
+            token.lex.like_num = lex_details.like_num
+            token.lex.like_email = lex_details.like_email
+            # token.lex.is_oov = lex_details.is_oov
+            token.lex.is_stop = lex_details.is_stop
+            token.lex.lang = lex_details.lang
+            token.lex.lang_ = lex_details.lang_
+            token.lex.prob = lex_details.prob
+            token.lex.cluster = lex_details.cluster
+            token.lex.sentiment = lex_details.sentiment
 
         return doc

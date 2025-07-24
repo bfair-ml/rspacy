@@ -45,7 +45,7 @@ def analyze_text(input: TextInput):
                 like_url=token.lex.like_url,
                 like_num=token.lex.like_num,
                 like_email=token.lex.like_email,
-                # is_oov=token.lex.is_oov,
+                is_oov=token.lex.is_oov,
                 is_stop=token.lex.is_stop,
                 lang=token.lex.lang,
                 lang_=token.lex.lang_,
