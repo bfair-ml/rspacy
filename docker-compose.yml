@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  spacy-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8555:8000"
+    volumes:
+      - .:/app
+      - ./rspacy:/usr/local/lib/python3.9/site-packages/rspacy
+    environment:
+      - PYTHONUNBUFFERED=1
