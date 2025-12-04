@@ -3,6 +3,7 @@ import requests
 from spacy.tokens import Doc
 from spacy.vocab import Vocab
 from rspacy.models import AnalyzeResponse
+from typing import List
 
 class RemoteSpacy:
     def __init__(self, api_url: str, legacy=True):
@@ -10,8 +11,8 @@ class RemoteSpacy:
         self.legacy = legacy
         self.vocab = Vocab()  # Use a default vocab to build spaCy docs
 
-    def __call__(self, text: str) -> Doc:
-        response = requests.post(self.api_url, json={"text": text})
+    def __call__(self, text: str, disable: List[str] = []) -> Doc:
+        response = requests.post(self.api_url, json={"text": text, "disable": disable})
         response.raise_for_status()
         parser = AnalyzeResponse.parse_obj if self.legacy else AnalyzeResponse.model_validate
         data = parser(response.json())

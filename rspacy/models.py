@@ -3,6 +3,7 @@ from typing import List
 
 class TextInput(BaseModel):
     text: str
+    disable: List[str]
 
 class LexemeDetails(BaseModel):
     rank: int

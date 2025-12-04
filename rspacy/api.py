@@ -11,7 +11,7 @@ app = FastAPI(title="Catalan NLP API")
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 def analyze_text(input: TextInput):
-    doc = nlp(input.text)
+    doc = nlp(input.text, disable=input.disable)
     return AnalyzeResponse(
         vocab=base64.b64encode(doc.vocab.to_bytes()).decode("utf-8"),
         doc=base64.b64encode(doc.to_bytes()).decode("utf-8"),
