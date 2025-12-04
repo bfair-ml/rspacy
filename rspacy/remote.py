@@ -5,14 +5,16 @@ from spacy.vocab import Vocab
 from rspacy.models import AnalyzeResponse
 
 class RemoteSpacy:
-    def __init__(self, api_url: str):
+    def __init__(self, api_url: str, legacy=True):
         self.api_url = api_url
+        self.legacy = legacy
         self.vocab = Vocab()  # Use a default vocab to build spaCy docs
 
     def __call__(self, text: str) -> Doc:
         response = requests.post(self.api_url, json={"text": text})
         response.raise_for_status()
-        data = AnalyzeResponse.model_validate(response.json())
+        parser = AnalyzeResponse.parse_obj if self.legacy else AnalyzeResponse.model_validate
+        data = parser(response.json())
 
         vocab_bytes = base64.b64decode(data.vocab)
         doc_bytes = base64.b64decode(data.doc)
