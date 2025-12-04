@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class TextInput(BaseModel):
     text: str
@@ -43,4 +44,4 @@ class LexemeDetails(BaseModel):
 class AnalyzeResponse(BaseModel):
     vocab: bytes
     doc: bytes
-    lexeme_details_per_token: list[LexemeDetails]
+    lexeme_details_per_token: List[LexemeDetails]
